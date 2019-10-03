@@ -12,8 +12,6 @@ namespace dupefiles
     public class Program
     {
 
-        // public static Comparer MyComparer { get; set; }
-
         public static void Main(string[] args)
         {
 
@@ -26,28 +24,11 @@ namespace dupefiles
             // MyComparer = new Comparer(args);
 
             Comparer MyComparer = new Comparer();             
+            MyComparer.Init(args);
     
-            Console.CancelKeyPress += delegate {
-                // call methods to clean up
-                MyComparer.Close();
-            };
-
-            while (true) {
-                MyComparer.Init(args);
-            }
-
-
-
+            MyComparer.Close();
         }
 
-  
-        // public static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        // {
-        //     Console.WriteLine("Exiting...");
-        //     MyComparer.Close();          
-        //     // Termitate what I have to terminate
-        //     Environment.Exit(-1);
-        // }
 
     }
 }

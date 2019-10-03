@@ -26,15 +26,7 @@ namespace dupefiles
         public long Size { get; set; }
         public string HashMD5  { get; set; }
         public string HashSHA256  { get; set; }
-
-
-private DupeFileItemList _DupeFileItemList = new DupeFileItemList();
-public DupeFileItemList DupeFileItemList
-{
-    get { return _DupeFileItemList; }
-    set { _DupeFileItemList = value; }
-}
-
+        public DupeFileItemList DupeFileItemList { get; set; }
 
         public FileIndexItem()
         {
@@ -44,6 +36,10 @@ public DupeFileItemList DupeFileItemList
 
     public class FileIndexItemList : List<FileIndexItem>
     {
+
+        public FileIndexItemList()
+        {            
+        }
 
         public bool ContainsFileName(string filename)
         {
@@ -67,8 +63,8 @@ public DupeFileItemList DupeFileItemList
 
         public FileIndex()
         {
-            this.Setup = new SetupOptions();
             this.Items = new FileIndexItemList();
+            this.Setup = new SetupOptions();
             this.LogFile = new StringBuilder();
         }
 
@@ -85,16 +81,14 @@ public DupeFileItemList DupeFileItemList
                 using (StreamReader file = File.OpenText(filename))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    this.Items = new FileIndexItemList();
                     this.Items = (FileIndexItemList)serializer.Deserialize(file, typeof(FileIndexItemList));
                 }           
-                DoOutput($"Index loaded with {this.Items.Count()} items.");
+                // DoOutput($"Index loaded with {this.Items.Count()} items.");
             }
             catch (System.Exception ex)
             {
                 DoOutput($"Exception: {ex.Message}.");
             }
-
         }
 
         public void SaveIndexAs(string filename)
@@ -433,11 +427,12 @@ public DupeFileItemList DupeFileItemList
 
         public void Scan(ScanOptions opt)
         {
-
+            // filter items
             var filterdItems = this.Items.Where(d => d.Size >= opt.MinSize).ToList();
             DoOutput($"Scanning {filterdItems.Count} filtered items.");            
             FileIndexItemList dupes = new FileIndexItemList();
 
+            // check items
             foreach (FileIndexItem item in filterdItems)
             {
                 // check size dupes and then calculate md5 hash
@@ -470,12 +465,12 @@ public DupeFileItemList DupeFileItemList
                 }               
             }
 
-
             // Binary compare sha256 dupes
             int dupesfound = 0;
             IEnumerable<IGrouping<string, FileIndexItem>> possibledupes =
                 this.Items.Where(t => t.HashSHA256 != null).GroupBy(f => f.HashSHA256, f => f);
 
+            // Binary compare sha256 dupes
             foreach (IGrouping<string, FileIndexItem> g in possibledupes)
             {
                 // Print the key value of the IGrouping.
@@ -544,16 +539,16 @@ public DupeFileItemList DupeFileItemList
                     counter += 1;
                     this.Items.RemoveAt(i);
                 }
-                // check dupe list for dead files
-                for (int f = itm.DupeFileItemList.Count() - 1; f >= 0; f--)
-                {
-                    DupeFileItem subitm = itm.DupeFileItemList[f];
-                    fi = new FileInfo(subitm.FullFilename);
-                    if (!fi.Exists)
-                    {
-                        itm.DupeFileItemList.RemoveAt(f);
-                    }
-                }
+                // // check dupe list for dead files
+                // for (int f = itm.DupeFileItemList.Count() - 1; f >= 0; f--)
+                // {
+                //     DupeFileItem subitm = itm.DupeFileItemList[f];
+                //     fi = new FileInfo(subitm.FullFilename);
+                //     if (!fi.Exists)
+                //     {
+                //         itm.DupeFileItemList.RemoveAt(f);
+                //     }
+                // }
             }
             this.DoOutput($"Purged {counter} files from the index.");
         }
