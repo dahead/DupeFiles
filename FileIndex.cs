@@ -84,10 +84,15 @@ namespace dupefiles
                     this.Items = (FileIndexItemList)serializer.Deserialize(file, typeof(FileIndexItemList));
                 }           
                 // DoOutput($"Index loaded with {this.Items.Count()} items.");
+
+                if (this.Items == null)
+                    {this.Items = new FileIndexItemList();}
+
             }
             catch (System.Exception ex)
             {
                 DoOutput($"Exception: {ex.Message}.");
+                this.Items = new FileIndexItemList();
             }
         }
 
@@ -104,12 +109,16 @@ namespace dupefiles
 
         public void Load()
         {
-            if (System.IO.File.Exists(IndexFileName))
+            try
             {
-                this.LoadIndexFrom(IndexFileName);
-            }               
-            else
+                if (System.IO.File.Exists(IndexFileName))
+                {
+                    this.LoadIndexFrom(IndexFileName);
+                }                    
+            }
+            catch (System.Exception ex)
             {
+                // create a new index if the old is corrupt.
                 this.Items = new FileIndexItemList();
             }
         }
