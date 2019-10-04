@@ -32,12 +32,12 @@ namespace dupefiles
                 // (CloneOptions opts) => RunCloneAndReturnExitCode(opts),
                 errs => HandleParseError(errs));
 
-
         }
 
         public int HandleParseError(IEnumerable<CommandLine.Error> errors)
         {
             // throw new NotImplementedException();
+            // Todo...            
             return 0;
         }
 
@@ -45,10 +45,9 @@ namespace dupefiles
 		{	
             if (String.IsNullOrEmpty(opt.Path))
             {
-                Console.WriteLine("Path to add not specified!");
+                Console.WriteLine("Path to add to the index not specified!");
                 return 0;
-            }
-            
+            }           
             return this.fidx.AddDirectory(opt);
 		}
 		
@@ -83,31 +82,28 @@ namespace dupefiles
         public void Close()
         {
             if (!this.fidx.Setup.PersistentMode)
-            {
-                
+            {           
                 // save index to file
                 this.fidx.Save();
 
+                // other stuff to do before closing...
+                // ...
 
                 // Write log to file
                 if (this.fidx.Setup.OutputType == OutputType.LogFile)
                 {
+                    // use a streamwriter
                     using (StreamWriter swriter = new StreamWriter(this.fidx.Setup.LogFilename))
                     {
                         swriter.Write(this.fidx.LogFile.ToString());
                     }  
                     // System.IO.File.WriteAllText(this.fids.LogFile.ToString(), this.fids.Setup.LogFilename);
                 }
-
             }
             else
             {
                 Console.WriteLine("Persistent mode is on. No harddisk output.");
-            }
-            
-
+            }            
         }
-
     }
-
 }

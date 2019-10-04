@@ -12,13 +12,13 @@
             "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/dupefiles.dll",
             "args": 
             [
-                "idplus",
-                "--path",
-                "/home/dh/dev/DemoDupes"
+                // "idplus",
+                // "--path",
+                // "/home/dh/dev/DemoDupes"
 
                 // "--help",
                 // "setup"
-                // "idscan"
+                "idscan"
 
                 // "idpurge"
 

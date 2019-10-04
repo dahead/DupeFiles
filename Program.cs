@@ -13,17 +13,12 @@ namespace dupefiles
     {
         public static void Main(string[] args)
         {
-            // CommandLine.Parser.Default.ParseArguments<Options>(args)
-            // .WithParsed<Options>(opts => RunOptionsAndReturnExitCode(opts))
-            // .WithNotParsed<Options>((errs) => HandleParseError(errs));
 
-            // // Init Code...
-            // Console.CancelKeyPress += Console_CancelKeyPress;  // Register the function to cancel event
-            // MyComparer = new Comparer(args);
-
+            // Create a new comparer
             Comparer MyComparer = new Comparer();             
+            // parse arguments and init
             MyComparer.Init(args);
-    
+            // Save and close.
             MyComparer.Close();
         }
 
