@@ -167,7 +167,7 @@ namespace dupefiles
 
             int fc = 0;
             IEnumerable<FileInfo> list = EnumerateFilesRecursive(opt);            
-            DoOutput($"Adding {list.Count()} items.");
+            DoOutput($"Adding {list.Count()} files to the index.");
 
             foreach (FileInfo fi in list)
             {
@@ -368,7 +368,7 @@ namespace dupefiles
         public void Scan(ScanOptions opt)
         {
             // filter items
-            var filterdItems = this.Items.Where(d => d.Size >= opt.MinSize).ToList();
+            var filterdItems = this.Items.Where(d => d.Size >= opt.MinSize && d.Size <= opt.MaxSize).ToList();
             DoOutput($"Scanning {filterdItems.Count} filtered items for binary duplicates.");            
 
             // check items

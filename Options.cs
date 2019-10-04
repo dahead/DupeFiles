@@ -38,6 +38,9 @@ namespace dupefiles
         [Option(Default = 10*1024, HelpText = "Minimum file size in bytes for comparison to use.")] 
         public long MinSize { get; set; }
 
+        [Option(Default = 1024*1024*1024, HelpText = "Maximum file size in bytes for comparison to use.")] 
+        public long MaxSize { get; set; }        
+
     }
 
     [Verb("idinfo", HelpText = "Show information of the index.")]

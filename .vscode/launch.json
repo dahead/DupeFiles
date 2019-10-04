@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -12,18 +9,21 @@
             "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/dupefiles.dll",
             "args": 
             [
-                // "idplus",
-                // "--path",
-                // "/home/dh/dev/DemoDupes"
-
+                // Show help
                 // "--help",
-                // "setup"
-                "idscan"
+                // "setup",
 
-                // "idpurge"
+                // add something to the index
+                //  "idplus",
+                //  "--path",
+                //  "/home/",
 
-                // "idinfo"
+                // scan the index of duplicate files
+                // "idscan",
 
+                // other options
+                // "idpurge",
+                // "idinfo",
                 // "setup",
                 // "--persistentmode"
             ],
@@ -32,10 +32,10 @@
             "console": "internalConsole"            
         }
     ],
-    "runtimes": [
-        {
-        "win10-x64": {},
-        "osx.10.10-x64": {}
-      }
-    ]
+    // "runtimes": [
+    //     {
+    //     "win10-x64": {},
+    //     "osx.10.10-x64": {}
+    //   }
+    // ]
 }

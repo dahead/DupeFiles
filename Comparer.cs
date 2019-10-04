@@ -29,7 +29,6 @@ namespace dupefiles
                 (ScanOptions opts) => RunScanAndReturnExitCode(opts),
                 (IndexInfoOptions opts) => RunIndexInfoAndReturnExitCode(opts),
                 (SetupOptions opts) => RunSetupAndReturnExitCode(opts),
-                // (CloneOptions opts) => RunCloneAndReturnExitCode(opts),
                 errs => HandleParseError(errs));
 
         }
@@ -53,7 +52,6 @@ namespace dupefiles
 		
         private int RunPurgeAndReturnExitCode(PurgeOptions opt)
 		{
-			//throw new NotImplementedException();
             this.fidx.Purge(opt);
             this.fidx.Save();
             return 0;
@@ -61,14 +59,12 @@ namespace dupefiles
 
 		private int RunScanAndReturnExitCode(ScanOptions opt)
 		{
-			//throw new NotImplementedException();
             this.fidx.Scan(opt);
             return 0;
 		}
 		
         private int RunIndexInfoAndReturnExitCode(IndexInfoOptions opt)
 		{
-			//throw new NotImplementedException();
             this.fidx.Info(opt);
             return 0;
 		}
