@@ -14,9 +14,9 @@
                 // "setup",
 
                 // add something to the index
-                //  "idplus",
-                //  "--path",
-                //  "/home/",
+                  "idplus",
+                  "--path",
+                  "/home/xxx",
 
                 // scan the index of duplicate files
                 // "idscan",
