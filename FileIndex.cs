@@ -160,8 +160,7 @@ namespace dupefiles
                 basedi = new DirectoryInfo(opt.Path);
                 if (!basedi.Exists)
                     { 
-                        DoOutput($"Error! Directory does not exist {opt.Path}!");
-                        
+                        DoOutput($"Error! Directory does not exist {opt.Path}!");                        
                         return 0; 
                     }
             }
