@@ -91,8 +91,13 @@ namespace dupefiles
             }
             catch (System.Exception ex)
             {
-                DoOutput($"Exception: {ex.Message}.");
+                // DoOutput($"Exception: {ex.Message}.");
                 this.Items = new FileIndexItemList();
+
+                // create a new index if the old is corrupt.
+                DoOutput($"Could not load the index {filename}. Exception: {ex.Message}");
+                // this.Items = new FileIndexItemList();
+
             }
         }
 
@@ -109,18 +114,10 @@ namespace dupefiles
 
         public void Load()
         {
-            try
+            if (System.IO.File.Exists(IndexFileName))
             {
-                if (System.IO.File.Exists(IndexFileName))
-                {
-                    this.LoadIndexFrom(IndexFileName);
-                }                    
-            }
-            catch (System.Exception ex)
-            {
-                // create a new index if the old is corrupt.
-                this.Items = new FileIndexItemList();
-            }
+                this.LoadIndexFrom(IndexFileName);
+            }                    
         }
 
         public void Save()
@@ -374,7 +371,14 @@ namespace dupefiles
         {
             // filter items
             var filterdItems = this.Items.Where(d => d.Size >= opt.MinSize && d.Size <= opt.MaxSize).ToList();
-            DoOutput($"Scanning {filterdItems.Count} filtered items for binary duplicates.");            
+
+            if (filterdItems.Count() == 0)
+            {
+                DoOutput($"Nothing to scan, the index is empty. Please first add items to the index.");
+                return;
+            }
+
+            DoOutput($"Scanning {filterdItems.Count} filtered items for binary duplicates.");
 
             // check items
             foreach (FileIndexItem item in filterdItems)

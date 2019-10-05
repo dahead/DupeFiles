@@ -14,12 +14,12 @@
                 // "setup",
 
                 // add something to the index
-                  "idplus",
-                  "--path",
-                  "/home/xxx",
+                //  "idplus",
+                //  "--path",
+                //  "/home/xxx",
 
                 // scan the index of duplicate files
-                // "idscan",
+                "idscan",
 
                 // other options
                 // "idpurge",
