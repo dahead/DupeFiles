@@ -161,6 +161,7 @@ namespace dupefiles
                 if (!basedi.Exists)
                     { 
                         DoOutput($"Error! Directory does not exist {opt.Path}!");
+                        
                         return 0; 
                     }
             }
