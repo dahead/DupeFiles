@@ -85,19 +85,15 @@ namespace dupefiles
                 }           
                 // DoOutput($"Index loaded with {this.Items.Count()} items.");
 
-                if (this.Items == null)
-                    {this.Items = new FileIndexItemList();}
-
+               if (this.Items == null)
+                {
+                    DoOutput($"Recreating new index file...");
+                    this.Items = new FileIndexItemList();
+                }                
             }
             catch (System.Exception ex)
             {
-                // DoOutput($"Exception: {ex.Message}.");
-                this.Items = new FileIndexItemList();
-
-                // create a new index if the old is corrupt.
                 DoOutput($"Could not load the index {filename}. Exception: {ex.Message}");
-                // this.Items = new FileIndexItemList();
-
             }
         }
 
@@ -224,9 +220,10 @@ namespace dupefiles
 
                 DirectoryInfo di = new DirectoryInfo(dir);
 
+                // Option: Skip directories starting with a dot?
                 if (opt.SkipDirectoriesStartingWithADot)
-                    if (di.Name.StartsWith("."))
-                        continue;
+                if (di.Name.StartsWith("."))
+                    continue;
 
                 try
                 {
@@ -250,17 +247,16 @@ namespace dupefiles
                 }       
                 foreach (string subdir in subdirs)
                 {
-
+                    // Option: Skip directories starting with a dot?
                     if (opt.SkipDirectoriesStartingWithADot)
                         if (subdir.StartsWith("."))
                             continue;
-
                     try
                     {
                         // DirectoryInfo 
                         // di = new DirectoryInfo(subdir);
                         // if (di.Exists)
-                            todo.Enqueue(subdir);
+                        todo.Enqueue(subdir);
                     }
                     catch (System.Exception ex)                    
                     {                   
@@ -283,6 +279,8 @@ namespace dupefiles
                     DoOutput($"UnauthorizedAccess Exception: {ex.Message}");
                     continue;
                 }
+
+                // Return all files
                 foreach (string filename in files)
                 {
                     yield return new FileInfo(filename);
@@ -291,7 +289,7 @@ namespace dupefiles
             }
         }
 
-        static string CalculateSHA256(string filename)
+        public string CalculateSHA256(string filename)
         {
             if (!System.IO.File.Exists(filename))
                 {return string.Empty;}
@@ -314,7 +312,7 @@ namespace dupefiles
             }                   
         }
 
-        static string CalculateMD5(string filename)
+        public string CalculateMD5(string filename)
         {
             if (!System.IO.File.Exists(filename))
                 {return string.Empty;}
@@ -337,7 +335,7 @@ namespace dupefiles
             }
         }
 
-        static bool BinaryCompareFiles(FileInfo first, FileInfo second)
+        public bool BinaryCompareFiles(FileInfo first, FileInfo second)
         {
             int cnt = sizeof(Int64);
 
