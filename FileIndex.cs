@@ -372,6 +372,7 @@ namespace dupefiles
             // filter items
             var filterdItems = this.Items.Where(d => d.Size >= opt.MinSize && d.Size <= opt.MaxSize).ToList();
 
+            // is there anything to scan?
             if (filterdItems.Count() == 0)
             {
                 DoOutput($"Nothing to scan, the index is empty. Please first add items to the index.");
