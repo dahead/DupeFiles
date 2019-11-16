@@ -1,0 +1,14 @@
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/hostpolicy.dll
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/hostfxr.dll
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/dupefiles.exe
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/dupefiles.deps.json
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/dupefiles.runtimeconfig.json
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/dupefiles.runtimeconfig.dev.json
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/dupefiles.dll
+/home/dh/dev/dupefiles/bin/Debug/netcoreapp2.2/win-x86/dupefiles.pdb
+/home/dh/dev/dupefiles/obj/Debug/netcoreapp2.2/win-x86/dupefiles.csprojAssemblyReference.cache
+/home/dh/dev/dupefiles/obj/Debug/netcoreapp2.2/win-x86/dupefiles.csproj.CoreCompileInputs.cache
+/home/dh/dev/dupefiles/obj/Debug/netcoreapp2.2/win-x86/dupefiles.AssemblyInfoInputs.cache
+/home/dh/dev/dupefiles/obj/Debug/netcoreapp2.2/win-x86/dupefiles.AssemblyInfo.cs
+/home/dh/dev/dupefiles/obj/Debug/netcoreapp2.2/win-x86/dupefiles.dll
+/home/dh/dev/dupefiles/obj/Debug/netcoreapp2.2/win-x86/dupefiles.pdb
