@@ -13,7 +13,6 @@ namespace dupefiles
     {
         public static void Main(string[] args)
         {
-
             // Create a new comparer
             Comparer MyComparer = new Comparer();             
             // parse arguments and init
