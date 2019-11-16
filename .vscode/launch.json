@@ -16,7 +16,7 @@
                 // add something to the index
                   "idplus",
                   "--path",
-                  "/home/dh/dev/DemoDupes",
+                  "/home/dh/Downloads",
 
                 // scan the index of duplicate files
                 // "idscan",
