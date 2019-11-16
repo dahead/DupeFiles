@@ -20,8 +20,10 @@ namespace dupefiles
         public void Init(string[] args)
         {
 
+            // load the index
             this.fidx.Load();
 
+            // Parse arguments
             CommandLine.Parser.Default.ParseArguments<AddOptions, ScanOptions, PurgeOptions, IndexInfoOptions, SetupOptions>(args)
                 .MapResult(
                 (AddOptions opts) => RunAddAndReturnExitCode(opts),
@@ -33,14 +35,14 @@ namespace dupefiles
 
         }
 
-        public int HandleParseError(IEnumerable<CommandLine.Error> errors)
+        private int HandleParseError(IEnumerable<CommandLine.Error> errors)
         {
             // throw new NotImplementedException();
             // Todo...            
             return 0;
         }
 
-        public int RunAddAndReturnExitCode(AddOptions opt)
+        private int RunAddAndReturnExitCode(AddOptions opt)
 		{	
             if (String.IsNullOrEmpty(opt.Path))
             {
@@ -59,7 +61,7 @@ namespace dupefiles
 
 		private int RunScanAndReturnExitCode(ScanOptions opt)
 		{
-            this.fidx.Scan(opt);
+            this.fidx.ScanAsync(opt);
             return 0;
 		}
 		
