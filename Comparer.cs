@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,13 +22,16 @@ namespace dupefiles
         public void Init(string[] args)
         {
 
+            this.fidx.LoadSetup();
+
             // load the index
             this.fidx.Load();
 
             // Parse arguments
-            CommandLine.Parser.Default.ParseArguments<AddOptions, ScanOptions, PurgeOptions, IndexInfoOptions, SetupOptions>(args)
+            CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, IndexInfoOptions, SetupOptions>(args)
                 .MapResult(
                 (AddOptions opts) => RunAddAndReturnExitCode(opts),
+                (RemoveOptions opts) => RunRemoveAndReturnExitCode(opts),
                 (PurgeOptions opts) => RunPurgeAndReturnExitCode(opts),
                 (ScanOptions opts) => RunScanAndReturnExitCode(opts),
                 (IndexInfoOptions opts) => RunIndexInfoAndReturnExitCode(opts),
@@ -44,14 +49,28 @@ namespace dupefiles
 
         private int RunAddAndReturnExitCode(AddOptions opt)
 		{	
-            if (String.IsNullOrEmpty(opt.Path))
-            {
-                Console.WriteLine("Path to add to the index not specified!");
-                return 0;
-            }           
-            return this.fidx.AddDirectory(opt);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            int result = this.fidx.AddDirectory(opt);
+            // Task result = this.fidx.AddDirectoryAsync(opt);
+
+            sw.Stop();
+            TimeSpan ts = sw.Elapsed;
+
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            this.fidx.DoOutput("Adding items took " + elapsedTime);
+
+            return 0;
 		}
 		
+        private int RunRemoveAndReturnExitCode(RemoveOptions opt)
+		{	
+            return this.fidx.Remove(opt);
+		}        
+
         private int RunPurgeAndReturnExitCode(PurgeOptions opt)
 		{
             this.fidx.Purge(opt);
@@ -61,7 +80,18 @@ namespace dupefiles
 
 		private int RunScanAndReturnExitCode(ScanOptions opt)
 		{
-            this.fidx.ScanAsync(opt);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            this.fidx.Scan(opt);
+
+            sw.Stop();
+            TimeSpan ts = sw.Elapsed;
+
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            this.fidx.DoOutput("Scan took " + elapsedTime);
+
             return 0;
 		}
 		
@@ -73,7 +103,7 @@ namespace dupefiles
 
         private int RunSetupAndReturnExitCode(SetupOptions opt)
         {
-            this.fidx.DoSetup(opt);
+            this.fidx.SaveSetup(opt);
             return 0;
         }
 
