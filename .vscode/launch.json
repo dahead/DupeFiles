@@ -6,25 +6,33 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/dupefiles.dll",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/dupefiles.dll",
             "args": 
             [
                 // Show help
                 // "--help",
                 // "setup",
 
-                // add something to the index
-                  "idplus",
-                  "--path",
-                  "/home/dh/Downloads",
+                // "idscan"
+
+                // // add something to the index
+                // "idplus",
+                // "--path",
+                // "/mnt/BVGT/",
+
+                // "idremove",
+                // "--pattern",
+                // "/home/dh/",
 
                 // scan the index of duplicate files
-                // "idscan",
+                "idscan",
 
                 // other options
                 // "idpurge",
                 // "idinfo",
                 // "setup",
+                //     "--outputtype Console",
+                //     "--logfilename log.txt"
                 // "--persistentmode"
             ],
             "cwd": "${workspaceFolder}",
