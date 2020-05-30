@@ -237,27 +237,26 @@ namespace dupefiles
             }
 
             DoOutput($"Adding content of {opt.Path} to the index. Stand by...");
+            // var spinner = new ConsoleSpinner(0, 10);
 
             // for each file
             int fc = 0;
-            IEnumerable<FileInfo> list = EnumerateFilesRecursive(opt);            
+            IEnumerable<FileInfo> list = EnumerateFilesRecursive(opt); //.Where(t => t.Exists == true);
             DoOutput($"Adding {list.Count()} files to the index.");
             foreach (FileInfo fi in list)
             {
-                // Create new File Index Item
-                FileIndexItem newitem = new FileIndexItem() 
-                {
-                        FullFilename = fi.FullName, 
-                        ShortName = fi.Name,
-                        Size = fi.Length,
-                        // dont calculate hash yet (speed up things)
-                        // HashMD5  = CalculateMD5(fi.FullName),
-                        // HashSHA256 = CalculateSHA256(fi),
-                };
-
                 try
                 {
-                    // Add new item to index
+                    // Create new File Index Item
+                    FileIndexItem newitem = new FileIndexItem() 
+                    {
+                            FullFilename = fi.FullName, 
+                            ShortName = fi.Name,
+                            Size = fi.Length,
+                            // dont calculate hash yet (speed up things)
+                            // HashMD5  = CalculateMD5(fi.FullName),
+                            // HashSHA256 = CalculateSHA256(fi),
+                    };                    // Add new item to index
                     this.Items.Add(newitem.FullFilename, newitem);
                     DoOutput($"Adding {newitem.Hash} file {fi.FullName}");
                     fc +=1;                   
@@ -268,6 +267,7 @@ namespace dupefiles
             }
 
             DoOutput($"Added directory {opt.Path} with {fc} items.");
+            // spinner.Stop();
 
             return fc;
         }
@@ -343,7 +343,7 @@ namespace dupefiles
                     }
                     catch (System.Exception ex)                    
                     {                   
-                        DoOutput($"Exception: {ex.Message}");                        
+                        // DoOutput($"Exception: {ex.Message}");                        
                         continue;
                     }
                 }                   
@@ -354,12 +354,12 @@ namespace dupefiles
                 }                
                 catch (IOException ex)
                 {
-                    DoOutput($"IO Exception: {ex.Message}");
+                    // DoOutput($"IO Exception: {ex.Message}");
                     continue;
                 }
                 catch (System.UnauthorizedAccessException ex)
                 {
-                    DoOutput($"UnauthorizedAccess Exception: {ex.Message}");
+                    // DoOutput($"UnauthorizedAccess Exception: {ex.Message}");
                     continue;
                 }
 
@@ -464,6 +464,7 @@ namespace dupefiles
             }
 
             DoOutput($"Starting base scan on {filterdItems.Count} filtered items [1/3].");
+            // var spinner = new ConsoleSpinner(0, 10);
 
             // Get all file size duplicates without comparing with our self (t.key)
             IEnumerable<IGrouping<long, KeyValuePair<string, FileIndexItem>>> fsd =
@@ -529,7 +530,6 @@ namespace dupefiles
                     foreach (KeyValuePair<string, FileIndexItem> item in g)
                     {
                         FileInfo file1 = new FileInfo(item.Value.FullFilename);                  
-                        // var otherfiles = g.Where(t => t.Value.HashSHA256 == g.Key && t.Value.FullFilename != item.Value.FullFilename);
                         var otherfiles = g.Where(t => t.Value.Hash == g.Key && t.Value.FullFilename != item.Value.FullFilename);
                         foreach (var sub in otherfiles)
                         {
@@ -559,6 +559,7 @@ namespace dupefiles
 
             // Finished.           
             DoOutput($"Found a total of {dupesfound} duplicates files.");
+            // spinner.Stop();
             return dupesfound;
         }
 

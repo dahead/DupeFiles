@@ -13,19 +13,19 @@
                 // "--help",
                 // "setup",
 
-                // "idscan"
+                "idscan"
 
                 // // add something to the index
                 // "idplus",
                 // "--path",
-                // "/mnt/BVGT/",
+                // "/home/dh/Downloads",
 
                 // "idremove",
                 // "--pattern",
                 // "/home/dh/",
 
                 // scan the index of duplicate files
-                "idscan",
+                // "idscan",
 
                 // other options
                 // "idpurge",

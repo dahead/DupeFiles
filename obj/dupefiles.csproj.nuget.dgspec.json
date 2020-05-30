@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/dh/dev/csharp/dupefiles/dupefiles.csproj": {}
+  },
+  "projects": {
+    "/home/dh/dev/csharp/dupefiles/dupefiles.csproj": {
+      "version": "1.1.1",
+      "restore": {
+        "projectUniqueName": "/home/dh/dev/csharp/dupefiles/dupefiles.csproj",
+        "projectName": "dupefiles",
+        "projectPath": "/home/dh/dev/csharp/dupefiles/dupefiles.csproj",
+        "packagesPath": "/home/dh/.nuget/packages/",
+        "outputPath": "/home/dh/dev/csharp/dupefiles/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dh/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "CommandLineParser": {
+              "target": "Package",
+              "version": "[2.6.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.101/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
