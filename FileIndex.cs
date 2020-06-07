@@ -428,22 +428,23 @@ namespace dupefiles
                 if (g.Count() > 1)
                 {                        
                     // DoOutput($"Calculating hash for {g.Count()} file size duplicates {BytesToString(g.Key)}.");
-                    foreach (KeyValuePair<string, FileIndexItem> item2 in g)
+                    foreach (KeyValuePair<string, FileIndexItem> sub in g)
                     {
-                        if (string.IsNullOrEmpty(item2.Value.Hash))
+                        if (string.IsNullOrEmpty(sub.Value.Hash))
                         {
-                            var x = Task.Run(() => CalculateSHA256(item2.Value.FullFilename));                            
+                            var x = Task.Run(() => CalculateSHA256(sub.Value.FullFilename));                            
                             do
                             {
                                 x.Wait(1000);
                                 s.UpdateProgress();
                             } while (!x.IsCompleted);
 
-                             this.Items[item2.Value.FullFilename].Hash = x.Result;
-                             DoOutput($"Calculated hash: {this.Items[item2.Value.FullFilename].Hash}");
-                            // this.Items[item2.Value.FullFilename].Hash = CalculateSHA256(item2.Value.FullFilename);
+                             this.Items[sub.Value.FullFilename].Hash = x.Result;
+                            //  DoOutput($"Calculated hash: {this.Items[sub.Value.FullFilename].Hash}");
+                            //  DoOutput($"    for file {this.Items[sub.Value.FullFilename].FullFilename}");
                         }
                     }
+                    s.UpdateProgress();
                 }
                 s.UpdateProgress();
             }
@@ -463,7 +464,7 @@ namespace dupefiles
             {
                 if (g.Count() > 1)
                 {
-                    DoOutput($"Staring binary comparism on hash group {g.Key}.");
+                    DoOutput($"Staring binary comparism on hash group {g.Key}");
                     foreach (KeyValuePair<string, FileIndexItem> item in g)
                     {
                         FileInfo file1 = new FileInfo(item.Value.FullFilename);
@@ -512,7 +513,9 @@ namespace dupefiles
                             {
                                 // DoOutput($"Error comparing files {file1.Name} and {file2.Name}. Error: {ex.Message}.");
                             }
+                            s.UpdateProgress();
                         }
+                        s.UpdateProgress();
                     }
                 }
                 s.UpdateProgress();
