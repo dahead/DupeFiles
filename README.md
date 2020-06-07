@@ -1,13 +1,14 @@
 # DupeFiles
-Dupe Files scans your system for duplicate files.
-Dupe Files is a C# DotNet Core Application which runs under windows and linux.
+DupeFiles scans your file system for duplicate files.
+DupeFiles is a csharp dotnet core application which runs under windows, linux and probably osx.
 
-Dupe Files checks files for file size, MD5 Hashsum, SHA256 Hashsum and finally binary for file duplicates.
-
-To see all possible options just run the application without parameters.
+DupeFiles checks files for for file size, hash and finally binary.
 
 ### Short demo
 ```
+// Show help
+dupefiles.exe --help
+
 // Add a folder to the index
 dupefiles.exe add --path /folder/to/add
 
