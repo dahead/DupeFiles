@@ -1,3 +1,5 @@
-index.json
+debug/*
 bin/*
+obj/*
 .vscode/*
+index.json
