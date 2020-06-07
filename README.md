@@ -9,7 +9,8 @@ To see all possible options just run the application without parameters.
 ### Short demo
 ```
 // Add a folder to the index
-dupefiles.exe --idplus --path /folder/to/add
+dupefiles.exe add --path /folder/to/add
+
 // Scan the index for duplicates
-dupefiles.exe --idscan
+dupefiles.exe scan
 ```
