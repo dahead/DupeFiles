@@ -6,6 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace dupefiles
 {
@@ -411,11 +412,17 @@ namespace dupefiles
             }
 
             // Get all file size duplicates without comparing with our self (t.key)
+            var s = new ConsoleSpinner();
+            ConsoleColor before = Console.ForegroundColor;
             DoOutput($"Starting base scan on {filterdItems.Count} filtered items...");
             IEnumerable<IGrouping<long, KeyValuePair<string, FileIndexItem>>> fsd =
                 filterdItems.GroupBy(f => f.Value.Size, f => f);
-            
-            Console.Write("Calculating hashes for file size duplicates...");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            DoOutput("Done.");
+            Console.ForegroundColor = before;           
+
+            DoOutput($"Calculating hashes for ~{fsd.Count()} file size duplicates...");
             foreach (IGrouping<long, KeyValuePair<string, FileIndexItem>> g in fsd)
             {
                 if (g.Count() > 1)
@@ -425,12 +432,25 @@ namespace dupefiles
                     {
                         if (string.IsNullOrEmpty(item2.Value.Hash))
                         {
-                            this.Items[item2.Value.FullFilename].Hash = CalculateSHA256(item2.Value.FullFilename);
+                            var x = Task.Run(() => CalculateSHA256(item2.Value.FullFilename));                            
+                            do
+                            {
+                                x.Wait(1000);
+                                s.UpdateProgress();
+                            } while (!x.IsCompleted);
+
+                             this.Items[item2.Value.FullFilename].Hash = x.Result;
+                             DoOutput($"Calculated hash: {this.Items[item2.Value.FullFilename].Hash}");
+                            // this.Items[item2.Value.FullFilename].Hash = CalculateSHA256(item2.Value.FullFilename);
                         }
-                        Console.Write(".");
                     }
                 }
+                s.UpdateProgress();
             }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            DoOutput("Done.");
+            Console.ForegroundColor = before;           
 
             // Binary compare sha256 dupes
             int dupesfound = 0;
@@ -443,6 +463,7 @@ namespace dupefiles
             {
                 if (g.Count() > 1)
                 {
+                    DoOutput($"Staring binary comparism on hash group {g.Key}.");
                     foreach (KeyValuePair<string, FileIndexItem> item in g)
                     {
                         FileInfo file1 = new FileInfo(item.Value.FullFilename);
@@ -494,7 +515,12 @@ namespace dupefiles
                         }
                     }
                 }
+                s.UpdateProgress();
             }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            DoOutput("Done.");
+            Console.ForegroundColor = before;      
 
             // Finished.
             long totalsize = this.Dupes.Sum(item => item.Value.Size);
@@ -512,7 +538,6 @@ namespace dupefiles
             {
                 if (g.Count() > 1)
                 {
-                    ConsoleColor before = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Red;
                     DoOutput($" Hash: {g.Key}");
                     Console.ForegroundColor = before;
@@ -524,6 +549,7 @@ namespace dupefiles
                 }
             }
 
+            // Option: save output to file...
             if (!string.IsNullOrEmpty(opt.Output))
             {
                 this.SaveDupes(opt.Output);
@@ -568,4 +594,42 @@ namespace dupefiles
 
     }
 
+}
+
+ internal class ConsoleSpinner
+{
+    private int _currentAnimationFrame;
+
+    public ConsoleSpinner()
+    {
+        SpinnerAnimationFrames = new[]
+                                    {
+                                        '|',
+                                        '/',
+                                        '-',
+                                        '\\'
+                                    };
+    }
+
+    public char[] SpinnerAnimationFrames { get; set; }
+
+    public void UpdateProgress()
+    {
+        // Store the current position of the cursor
+        var originalX = Console.CursorLeft;
+        var originalY = Console.CursorTop;
+
+        // Write the next frame (character) in the spinner animation
+        Console.Write(SpinnerAnimationFrames[_currentAnimationFrame]);
+
+        // Keep looping around all the animation frames
+        _currentAnimationFrame++;
+        if (_currentAnimationFrame == SpinnerAnimationFrames.Length)
+        {
+            _currentAnimationFrame = 0;
+        }
+
+        // Restore cursor to original position
+        Console.SetCursorPosition(originalX, originalY);
+    }
 }

@@ -13,23 +13,24 @@
                 // "--help",
                 // "setup",
 
-                // "idscan"
+                // "scan"
 
                 // // add something to the index
-                // "idplus",
+                // "add",
                 // "--path",
                 // "/home/dh/Downloads",
 
-                // "idremove",
+                // "remove",
                 // "--pattern",
                 // "/home/dh/",
 
                 // scan the index of duplicate files
-                // "idscan",
+                "scan",
+                "--output",
+                     "dupes.json",
 
                 // other options
-                // "idpurge",
-                // "idinfo",
+                // "purge",
                 // "setup",
                 //     "--outputtype Console",
                 //     "--logfilename log.txt"
