@@ -13,7 +13,6 @@ namespace dupefiles
     public class FileIndexItem
     {
         public string FullFilename { get; set; }
-        public string ShortName { get; set; }
         public long Size { get; set; }
         public string Hash  { get; set; }
     }
@@ -136,6 +135,16 @@ namespace dupefiles
             return 0;
         }
 
+        private void SaveDupes(string filename)
+        {
+            // serialize JSON directly to a file
+            using (StreamWriter file = File.CreateText(filename))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, this.Dupes);
+            }
+        }
+
         private string GetSetupFilename()
         {
             // Use DoNotVerify in case LocalApplicationData doesn’t exist.
@@ -156,21 +165,14 @@ namespace dupefiles
 
         public void DoOutput(string output = "")
         {
-
             switch (this.Setup.OutputType)
             {
                 case OutputType.Console:
                     Console.WriteLine(output);
-                    break;
-                
+                    break;                
                 case OutputType.LogFile:
                     this.LogFile.AppendLine(output);
                     break;
-
-                case OutputType.XML:
-                    // todo...
-                    break;
-
                 case OutputType.Silent:
                     // output nothing
                     break;
@@ -195,7 +197,7 @@ namespace dupefiles
                 return 0;
             }
 
-            DoOutput($"Adding content of {opt.Path} to the index. Stand by...");
+            DoOutput($"Adding content of {opt.Path} to the index. Please stand by...");
 
             // for each file
             int fc = 0;
@@ -208,12 +210,11 @@ namespace dupefiles
                     FileIndexItem newitem = new FileIndexItem() 
                     {
                             FullFilename = fi.FullName, 
-                            ShortName = fi.Name,
                             Size = fi.Length,
                     };
                     // Add new item to index
                     this.Items.Add(newitem.FullFilename, newitem);
-                    DoOutput($"Adding {newitem.Hash} file {fi.FullName}");
+                    DoOutput($"Adding file {fi.FullName}");
                     fc +=1;                   
                 }
                 catch (System.ArgumentException)
@@ -289,7 +290,7 @@ namespace dupefiles
                     {                   
                         continue;
                     }
-                }                   
+                }
 
                 try
                 {
@@ -310,7 +311,7 @@ namespace dupefiles
                 foreach (string filename in files)
                 {
                     yield return new FileInfo(filename);
-                }                
+                }
             }
         }
 
@@ -414,6 +415,7 @@ namespace dupefiles
             IEnumerable<IGrouping<long, KeyValuePair<string, FileIndexItem>>> fsd =
                 filterdItems.GroupBy(f => f.Value.Size, f => f);
             
+            Console.Write("Calculating hashes for file size duplicates...");
             foreach (IGrouping<long, KeyValuePair<string, FileIndexItem>> g in fsd)
             {
                 if (g.Count() > 1)
@@ -423,9 +425,9 @@ namespace dupefiles
                     {
                         if (string.IsNullOrEmpty(item2.Value.Hash))
                         {
-                            DoOutput($"   - Calculating hash for: {item2.Key}");
                             this.Items[item2.Value.FullFilename].Hash = CalculateSHA256(item2.Value.FullFilename);
                         }
+                        Console.Write(".");
                     }
                 }
             }
@@ -439,7 +441,6 @@ namespace dupefiles
             DoOutput($"Found {possibledupes.Count()} possible hash groups for binary comparism...");
             foreach (IGrouping<string, KeyValuePair<string, FileIndexItem>> g in possibledupes)
             {
-
                 if (g.Count() > 1)
                 {
                     foreach (KeyValuePair<string, FileIndexItem> item in g)
@@ -467,10 +468,15 @@ namespace dupefiles
                                 // Dupe found
                                 if (identical)
                                 {
-                                    ConsoleColor before = Console.ForegroundColor;
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    DoOutput($" - Duplicate file found: {file2.FullName}");
-                                    Console.ForegroundColor = before;
+                                    // ConsoleColor before = Console.ForegroundColor;
+
+                                    // Console.ForegroundColor = ConsoleColor.Red;
+                                    // DoOutput($" Duplicate file pair found:");
+                                    // Console.ForegroundColor = before;
+
+                                    // DoOutput($"     {file1.FullName}");                                    
+                                    // DoOutput($"     {file2.FullName}");
+                                    
                                     try
                                     {
                                         this.Dupes.Add(sub.Value.FullFilename, sub.Value);
@@ -491,9 +497,38 @@ namespace dupefiles
             }
 
             // Finished.
-           long totalsize = this.Dupes.Sum(item => item.Value.Size);
+            long totalsize = this.Dupes.Sum(item => item.Value.Size);
+            DoOutput($"Found a total of {dupesfound} duplicates files with a size of {BytesToString(totalsize)}:");
 
-            DoOutput($"Found a total of {dupesfound} duplicates files with a size of {BytesToString(totalsize)}.");
+            // var query = from f in this.Dupes
+            //             group f by new {f.Value.FullFilename, f.Value.Size, f.Value.Hash} into g
+            //             select g.OrderByDescending(e => e.Value.Size);
+            
+
+            IEnumerable<IGrouping<string, KeyValuePair<string, FileIndexItem>>> dupes =
+                this.Dupes.OrderByDescending(p => p.Value.Size).GroupBy(f => f.Value.Hash, f => f);
+
+            foreach (IGrouping<string, KeyValuePair<string, FileIndexItem>> g in dupes)
+            {
+                if (g.Count() > 1)
+                {
+                    ConsoleColor before = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    DoOutput($" Hash: {g.Key}");
+                    Console.ForegroundColor = before;
+
+                    foreach (KeyValuePair<string, FileIndexItem> item in g)
+                    {
+                        DoOutput($"     {item.Value.FullFilename} [{BytesToString(item.Value.Size)}]");                        
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(opt.Output))
+            {
+                this.SaveDupes(opt.Output);
+            }
+
             this.Save();
             return dupesfound;
         }

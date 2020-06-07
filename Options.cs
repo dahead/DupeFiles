@@ -9,11 +9,9 @@ using CommandLine.Text;
 namespace dupefiles
 {
 
-    public enum OutputType { Silent, Console, LogFile, XML }
+    public enum OutputType { Silent, Console, LogFile }
 
-    public enum LogAddType {NewLine, Append};
-
-    [Verb("add", HelpText = "Add file contents to the index.")]
+    [Verb("add", HelpText = "Add files to the index.")]
     public class AddOptions {
         [Option(Required = true, HelpText = "Path of the directory to add.")] 
         public string Path { get; set; }
@@ -45,14 +43,16 @@ namespace dupefiles
         public long MinSize { get; set; }
 
         [Option(Default = long.MaxValue, HelpText = "Maximum file size in bytes for comparison to use.")] 
-        public long MaxSize { get; set; }        
-
+        public long MaxSize { get; set; }
+        
+        [Option(Default = "output.json", HelpText = "Filename where are found duplicate files are saved.")] 
+        public string Output { get; set; }
     }
 
     [Verb("setup", HelpText = "Configures stuff.")]
     public class SetupOptions {
 
-        [Option(Default = OutputType.Console, HelpText = "The output type. Console, LogFile, XML or Silent.")] 
+        [Option(Default = OutputType.Console, HelpText = "The output type. Console, LogFile or Silent.")] 
         public OutputType OutputType { get; set; }   
 
         [Option(Default = "log", HelpText = "Filename of the log file (when output is set to LogFile or XML).")] 
