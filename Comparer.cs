@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CommandLine;
+using System.Reflection;
 
 namespace dupefiles
 {
@@ -27,16 +28,19 @@ namespace dupefiles
             // load the index
             this.fidx.Load();
 
+            // show Version
+            // this.fidx.DoOutput(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
+
             // Parse arguments
             CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, SetupOptions>(args)
                 .MapResult(
-                (AddOptions opts) => RunAddAndReturnExitCode(opts),
-                (RemoveOptions opts) => RunRemoveAndReturnExitCode(opts),
-                (PurgeOptions opts) => RunPurgeAndReturnExitCode(opts),
-                (ScanOptions opts) => RunScanAndReturnExitCode(opts),
-                (SetupOptions opts) => RunSetupAndReturnExitCode(opts),
-                errs => HandleParseError(errs));
-
+                        (AddOptions opts) => RunAddAndReturnExitCode(opts),
+                        (RemoveOptions opts) => RunRemoveAndReturnExitCode(opts),
+                        (PurgeOptions opts) => RunPurgeAndReturnExitCode(opts),
+                        (ScanOptions opts) => RunScanAndReturnExitCode(opts),
+                        (SetupOptions opts) => RunSetupAndReturnExitCode(opts),
+                    errs => HandleParseError(errs)
+                );
         }
 
         private int HandleParseError(IEnumerable<CommandLine.Error> errors)

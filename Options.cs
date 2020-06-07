@@ -15,11 +15,10 @@ namespace dupefiles
 
     [Verb("add", HelpText = "Add file contents to the index.")]
     public class AddOptions {
-
-        [Option(Required = true, HelpText = "Path of directory to add.")] 
+        [Option(Required = true, HelpText = "Path of the directory to add.")] 
         public string Path { get; set; }
 
-        [Option(Default = true, HelpText = "Include sub directories when adding.")] 
+        [Option(Default = true, HelpText = "Include sub directories.")] 
         public bool Recursive { get; set; }
 
         [Option(Default = true, HelpText = "Skip adding directory names which start with a dot.")] 
@@ -27,16 +26,12 @@ namespace dupefiles
 
         [Option(Default = "*.*", HelpText = "Pattern for file extension of files to include.")] 
         public string Pattern { get; set; }
-
     }
-
 
     [Verb("remove", HelpText = "Remove file contents from the index.")]
     public class RemoveOptions {
-
         [Option(Required = true, HelpText = "Pattern for file or directory names to remove.")] 
         public string Pattern { get; set; }
-
     }
 
     [Verb("purge", HelpText = "Purge the index of non existant files.")]
