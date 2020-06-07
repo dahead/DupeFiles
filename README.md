@@ -16,10 +16,6 @@ dupefiles.exe add --path /folder/to/add
 dupefiles.exe scan
 ```
 
-### Todo
-- Add output of found duplicates to file
-- Add interactive mode if no parameters are given?
-
 ### Version history
 - 1.2.0 (07/06/2020)
     - New scan option "output" for storing the found duplicate file information.
