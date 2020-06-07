@@ -67,5 +67,4 @@ namespace dupefiles
         public bool PersistentMode { get; set; }
     }
 
-
 }

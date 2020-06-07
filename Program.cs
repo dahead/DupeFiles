@@ -22,7 +22,5 @@ namespace dupefiles
             // Save and close.
             MyComparer.Close();
         }
-
-
     }
 }

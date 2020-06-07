@@ -38,7 +38,7 @@
           "dependencies": {
             "CommandLineParser": {
               "target": "Package",
-              "version": "[2.6.0, )"
+              "version": "(, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",

@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "CommandLineParser/2.6.0": {
+      "CommandLineParser/2.8.0": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/CommandLine.dll": {}
@@ -23,15 +23,17 @@
     }
   },
   "libraries": {
-    "CommandLineParser/2.6.0": {
-      "sha512": "jjJ2Ey2pPY6OeY74Qau2cH+M+pN4kvvSP+kKlDzIZUcJs1oK+QlNjQYnm8HQj2fQa2aZLtwJig4MI0Vbx4YBSA==",
+    "CommandLineParser/2.8.0": {
+      "sha512": "eco2HlKQBY4Joz9odHigzGpVzv6pjsXnY5lziioMveQxr+i2Z7xYcIOMeZTgYiqnMtMAbXMXsVhrNfWO5vJS8Q==",
       "type": "package",
-      "path": "commandlineparser/2.6.0",
+      "path": "commandlineparser/2.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "CommandLine20.png",
+        "License.md",
         "README.md",
-        "commandlineparser.2.6.0.nupkg.sha512",
+        "commandlineparser.2.8.0.nupkg.sha512",
         "commandlineparser.nuspec",
         "lib/net40/CommandLine.dll",
         "lib/net40/CommandLine.xml",
@@ -77,7 +79,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "CommandLineParser >= 2.6.0",
+      "CommandLineParser",
       "Newtonsoft.Json >= 12.0.3"
     ]
   },
@@ -118,7 +120,7 @@
         "dependencies": {
           "CommandLineParser": {
             "target": "Package",
-            "version": "[2.6.0, )"
+            "version": "(, )"
           },
           "Newtonsoft.Json": {
             "target": "Package",
