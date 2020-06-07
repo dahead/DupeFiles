@@ -10,38 +10,16 @@ using System.Security.Cryptography;
 namespace dupefiles
 {
 
-    public class DupeFileItemList : List<DupeFileItem>
-    {
-    }
-
-    public class DupeFileItem
-    {
-        public string FullFilename { get; set; }
-    }
-
     public class FileIndexItem
     {
         public string FullFilename { get; set; }
         public string ShortName { get; set; }
         public long Size { get; set; }
-        // public string HashMD5  { get; set; }
-        // public string HashSHA256  { get; set; }
         public string Hash  { get; set; }
-        public DupeFileItemList DupeFileItemList { get; set; }
-
-        public FileIndexItem()
-        {
-            this.DupeFileItemList = new DupeFileItemList();
-        }
     }
 
     public class FileIndexItemList : Dictionary<string, FileIndexItem>
     {
-
-        public FileIndexItemList()
-        { 
-        }
-
     }
 
     public class FileIndex
@@ -50,11 +28,13 @@ namespace dupefiles
         public SetupOptions Setup { get; set; }
         const string IndexFileName = "index.json";
         public FileIndexItemList Items { get; set; }
+        public FileIndexItemList Dupes { get; set; }
         public StringBuilder LogFile { get; set; }
 
         public FileIndex()
         {
             this.Items = new FileIndexItemList();
+            this.Dupes = new FileIndexItemList();
             this.Setup = new SetupOptions();
             this.LogFile = new StringBuilder();
         }
@@ -74,13 +54,6 @@ namespace dupefiles
                     JsonSerializer serializer = new JsonSerializer();
                     this.Items = (FileIndexItemList)serializer.Deserialize(file, typeof(FileIndexItemList));
                 }           
-                // DoOutput($"Index loaded with {this.Items.Count()} items.");
-
-                if (this.Items == null)
-                {
-                    DoOutput($"Recreating new index file...");
-                    this.Items = new FileIndexItemList();
-                }                
             }
             catch (System.Exception ex)
             {
@@ -98,10 +71,10 @@ namespace dupefiles
             // serialize JSON directly to a file
             using (StreamWriter file = File.CreateText(filename))
             {
-                JsonSerializer serializer = new JsonSerializer();
+                JsonSerializer serializer = new JsonSerializer() { Formatting = Formatting.Indented };
                 serializer.Serialize(file, this.Items);
             }
-            DoOutput($"Index saved with {this.Items.Count()} items as {filename}.");
+            // DoOutput($"Index saved with {this.Items.Count()} items as {filename}.");
         }
 
         public void Load()
@@ -137,7 +110,7 @@ namespace dupefiles
             
                 // apply setup            
                 this.Setup = opt;
-                DoOutput($"Loaded setup from file {filename}.");
+                // DoOutput($"Loaded setup from file {filename}.");
             }
             return 0;
         }
@@ -181,25 +154,13 @@ namespace dupefiles
             return result;
         }       
 
-        private string lastline = "";
-        public void DoOutput(string output = "", LogAddType lat = LogAddType.NewLine)
+        public void DoOutput(string output = "")
         {
 
             switch (this.Setup.OutputType)
             {
                 case OutputType.Console:
-
-                    if (lat == LogAddType.NewLine)
-                    {
-                        Console.WriteLine(output);
-                    }
-                    else
-                    if (lat == LogAddType.Append)
-                    {
-                        Console.SetCursorPosition(lastline.Length, Console.CursorTop);
-                        // Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
-                        Console.Write(output);
-                    }
+                    Console.WriteLine(output);
                     break;
                 
                 case OutputType.LogFile:
@@ -214,8 +175,6 @@ namespace dupefiles
                     // output nothing
                     break;
             }
-
-            lastline = output;            
         }
 
         public int AddDirectory(AddOptions opt)
@@ -237,12 +196,10 @@ namespace dupefiles
             }
 
             DoOutput($"Adding content of {opt.Path} to the index. Stand by...");
-            // var spinner = new ConsoleSpinner(0, 10);
 
             // for each file
             int fc = 0;
             IEnumerable<FileInfo> list = EnumerateFilesRecursive(opt); //.Where(t => t.Exists == true);
-            DoOutput($"Adding {list.Count()} files to the index.");
             foreach (FileInfo fi in list)
             {
                 try
@@ -253,10 +210,8 @@ namespace dupefiles
                             FullFilename = fi.FullName, 
                             ShortName = fi.Name,
                             Size = fi.Length,
-                            // dont calculate hash yet (speed up things)
-                            // HashMD5  = CalculateMD5(fi.FullName),
-                            // HashSHA256 = CalculateSHA256(fi),
-                    };                    // Add new item to index
+                    };
+                    // Add new item to index
                     this.Items.Add(newitem.FullFilename, newitem);
                     DoOutput($"Adding {newitem.Hash} file {fi.FullName}");
                     fc +=1;                   
@@ -265,17 +220,13 @@ namespace dupefiles
                 {
                 }
             }
-
             DoOutput($"Added directory {opt.Path} with {fc} items.");
-            // spinner.Stop();
-
             return fc;
         }
 
         public int Remove(RemoveOptions opt)
         {
             int fc = 0;
-
             foreach (KeyValuePair<string, FileIndexItem> item in this.Items)
             {
                 if (item.Key.Contains(opt.Pattern))
@@ -284,7 +235,6 @@ namespace dupefiles
                     fc += 1;
                 }
             }
-
             DoOutput($"Removed {fc} items from the index.");
             return fc;
         }
@@ -313,10 +263,7 @@ namespace dupefiles
                     if (opt.Recursive)
                         subdirs = Directory.GetDirectories(dir);
                     else
-                    {
                         subdirs = new string[] {dir};
-                    }
-
                 }                
                 catch (IOException ex)
                 {
@@ -336,14 +283,10 @@ namespace dupefiles
                             continue;
                     try
                     {
-                        // DirectoryInfo 
-                        // di = new DirectoryInfo(subdir);
-                        // if (di.Exists)
                         todo.Enqueue(subdir);
                     }
                     catch (System.Exception ex)                    
                     {                   
-                        // DoOutput($"Exception: {ex.Message}");                        
                         continue;
                     }
                 }                   
@@ -367,8 +310,7 @@ namespace dupefiles
                 foreach (string filename in files)
                 {
                     yield return new FileInfo(filename);
-                }
-                
+                }                
             }
         }
 
@@ -399,7 +341,6 @@ namespace dupefiles
         {
             if (!System.IO.File.Exists(filename))
                 return string.Empty;
-
             try
             {
                 using (var md5 = MD5.Create())
@@ -418,34 +359,39 @@ namespace dupefiles
                 return ex.Message;
             }
         }
+
+        public static bool AreFileContentsEqual(FileInfo fi1, FileInfo fi2) =>
+            fi1.Length == fi2.Length &&
+            (fi1.Length == 0 || File.ReadAllBytes(fi1.FullName).SequenceEqual(
+                                File.ReadAllBytes(fi2.FullName)));
         
-        private static bool StreamsContentsAreEqual(Stream stream1, Stream stream2)
+        private static bool StreamsContentsAreEqual(FileInfo file1, FileInfo file2)
         {
             const int bufferSize = 2048 * 2;
             var buffer1 = new byte[bufferSize];
             var buffer2 = new byte[bufferSize];
 
-            while (true)
+            using (FileStream fs1 = file1.OpenRead())
+            using (FileStream fs2 = file2.OpenRead())
             {
-                int count1 = stream1.Read(buffer1, 0, bufferSize);
-                int count2 = stream2.Read(buffer2, 0, bufferSize);
-
-                if (count1 != count2)
+                while (true)
                 {
-                    return false;
-                }
+                    int count1 = fs1.Read(buffer1, 0, bufferSize);
+                    int count2 = fs2.Read(buffer2, 0, bufferSize);
 
-                if (count1 == 0)
-                {
-                    return true;
-                }
-
-                int iterations = (int)Math.Ceiling((double)count1 / sizeof(Int64));
-                for (int i = 0; i < iterations; i++)
-                {
-                    if (BitConverter.ToInt64(buffer1, i * sizeof(Int64)) != BitConverter.ToInt64(buffer2, i * sizeof(Int64)))
-                    {
+                    if (count1 != count2)
                         return false;
+
+                    if (count1 == 0)
+                        return true;
+
+                    int iterations = (int)Math.Ceiling((double)count1 / sizeof(Int64));
+                    for (int i = 0; i < iterations; i++)
+                    {
+                        if (BitConverter.ToInt64(buffer1, i * sizeof(Int64)) != BitConverter.ToInt64(buffer2, i * sizeof(Int64)))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -463,65 +409,34 @@ namespace dupefiles
                 return 0;
             }
 
-            DoOutput($"Starting base scan on {filterdItems.Count} filtered items [1/3].");
-            // var spinner = new ConsoleSpinner(0, 10);
-
             // Get all file size duplicates without comparing with our self (t.key)
+            DoOutput($"Starting base scan on {filterdItems.Count} filtered items...");
             IEnumerable<IGrouping<long, KeyValuePair<string, FileIndexItem>>> fsd =
-                filterdItems.Where(t => t.Value.Hash == null).GroupBy(f => f.Value.Size, f => f);
-
+                filterdItems.GroupBy(f => f.Value.Size, f => f);
+            
             foreach (IGrouping<long, KeyValuePair<string, FileIndexItem>> g in fsd)
             {
                 if (g.Count() > 1)
                 {                        
-                    DoOutput($"Calculating MD5 hash for {g.Count()} file size duplicates {BytesToString(g.Key)}.");
+                    // DoOutput($"Calculating hash for {g.Count()} file size duplicates {BytesToString(g.Key)}.");
                     foreach (KeyValuePair<string, FileIndexItem> item2 in g)
                     {
                         if (string.IsNullOrEmpty(item2.Value.Hash))
                         {
                             DoOutput($"   - Calculating hash for: {item2.Key}");
-                            // item2.Value.HashMD5 = CalculateMD5(item2.Value.FullFilename);
                             this.Items[item2.Value.FullFilename].Hash = CalculateSHA256(item2.Value.FullFilename);
-                            // DoOutput($"[{item2.Value.HashMD5}]", LogAddType.Append);
                         }
                     }
                 }
             }
-            this.Save();
-
-            // // md5 dupes
-            // IEnumerable<IGrouping<string, KeyValuePair<string, FileIndexItem>>> md5dupes =
-            //     filterdItems.Where(t => t.Value.HashMD5 != string.Empty).GroupBy(f => f.Value.HashMD5, f => f);
-            // if (md5dupes.Count() > 1)
-            // {
-            //     DoOutput($"Starting hash scan on {md5dupes.Count()} groups.");
-            //     foreach (IGrouping<string, KeyValuePair<string, FileIndexItem>> g in md5dupes)
-            //     {
-            //         if (g.Count() > 1)
-            //         {
-            //             DoOutput($"Calculating SHA256 hash for {g.Count()} MD5 duplicates.");
-            //             foreach (KeyValuePair<string, FileIndexItem> item2 in g)
-            //             {
-            //                 DoOutput($"   - Calculating hash for: {item2.Key}");
-            //                 if (string.IsNullOrEmpty(item2.Value.HashSHA256))
-            //                     item2.Value.HashSHA256 = CalculateSHA256(item2.Value.FullFilename);
-            //                 // DoOutput($" [{item2.Value.HashSHA256}]", LogAddType.Append);
-            //             }
-            //         }
-            //     }                    
-            // }
-
-            // this.Save();
 
             // Binary compare sha256 dupes
-            DoOutput("Starting binary comparism [2/3].");
             int dupesfound = 0;
             IEnumerable<IGrouping<string, KeyValuePair<string, FileIndexItem>>> possibledupes =
-            this.Items.Where(t => t.Value.Hash != null).GroupBy(f => f.Value.Hash, f => f);
-            // this.Items.Where(t => t.Value.HashSHA256 != null).GroupBy(f => f.Value.HashSHA256, f => f);
+                this.Items.Where(t => t.Value.Hash != null).GroupBy(f => f.Value.Hash, f => f);
 
             // Binary compare sha256 dupes
-            DoOutput($"Found {possibledupes.Count()} possible duplicates for binary comparism [3/3].");
+            DoOutput($"Found {possibledupes.Count()} possible hash groups for binary comparism...");
             foreach (IGrouping<string, KeyValuePair<string, FileIndexItem>> g in possibledupes)
             {
 
@@ -529,84 +444,60 @@ namespace dupefiles
                 {
                     foreach (KeyValuePair<string, FileIndexItem> item in g)
                     {
-                        FileInfo file1 = new FileInfo(item.Value.FullFilename);                  
+                        FileInfo file1 = new FileInfo(item.Value.FullFilename);
+                        if (!file1.Exists)
+                        {
+                            this.Items.Remove(item.Key);
+                            continue;
+                        }
+
                         var otherfiles = g.Where(t => t.Value.Hash == g.Key && t.Value.FullFilename != item.Value.FullFilename);
                         foreach (var sub in otherfiles)
                         {
                             FileInfo file2 = new FileInfo(sub.Value.FullFilename);
-                            DoOutput($"- Binary comparing file {Environment.NewLine} - {file1.FullName} with {Environment.NewLine} - {file2.FullName}");
+                            if (!file2.Exists)
+                            {
+                                this.Items.Remove(sub.Key);
+                                continue;
+                            }                            
                             bool identical = false;
                             try
                             {                       
-                                identical = StreamsContentsAreEqual(file1.OpenRead(), file2.OpenRead());
-                                // Dupe found                            
+                                identical = StreamsContentsAreEqual(file1, file2);
+                                // Dupe found
                                 if (identical)
                                 {
-                                    // todo: check if list already contains item
+                                    ConsoleColor before = Console.ForegroundColor;
+                                    Console.ForegroundColor = ConsoleColor.Red;
                                     DoOutput($" - Duplicate file found: {file2.FullName}");
-                                    item.Value.DupeFileItemList.Add(new DupeFileItem() { FullFilename = file2.FullName} );
-                                    dupesfound += 1;
+                                    Console.ForegroundColor = before;
+                                    try
+                                    {
+                                        this.Dupes.Add(sub.Value.FullFilename, sub.Value);
+                                        dupesfound += 1;                                        
+                                    }
+                                    catch (System.Exception ex)
+                                    {
+                                    }
                                 }
                             }
                             catch (System.Exception ex)
                             {
-                                DoOutput($"Error comparing files {file1.Name} and {file2.Name}. Error: {ex.Message}.");
+                                // DoOutput($"Error comparing files {file1.Name} and {file2.Name}. Error: {ex.Message}.");
                             }
                         }
                     }
                 }
             }
 
-            // Finished.           
-            DoOutput($"Found a total of {dupesfound} duplicates files.");
-            // spinner.Stop();
+            // Finished.
+           long totalsize = this.Dupes.Sum(item => item.Value.Size);
+
+            DoOutput($"Found a total of {dupesfound} duplicates files with a size of {BytesToString(totalsize)}.");
+            this.Save();
             return dupesfound;
         }
-
-        public void Info(IndexInfoOptions opt)
-        {
-
-            if (this.Items.Count() == 0)
-                {return;}
-
-            // Show duplicate files by sha256 hash and where DupeFileItemList is not empty
-            IEnumerable<IGrouping<string, KeyValuePair<string, FileIndexItem>>> dupes =
-                    this.Items.Where(t => t.Value.Hash != null).Where(t => t.Value.DupeFileItemList != null).GroupBy(f => f.Value.Hash, f => f);
-
-            // // show duplicate files by Size
-            // IEnumerable<IGrouping<string, FileIndexItem>> dupes =
-            //     this.Items.Where(t => t.DupeFileItemList != null).GroupBy(f => BytesToString(f.Size), f => f);
-
-            long total = 0;
-            if (dupes.Count() == 0)
-            {
-                DoOutput("No duplicates found. Show index instead? (Y/N)");
-                if (Console.ReadLine().ToUpper().StartsWith("Y"))
-                {
-                    foreach (KeyValuePair<string, FileIndexItem> item in this.Items)
-                    {
-                        DoOutput(String.Format("{0} {1}", item.Value.FullFilename, item.Value.Size));
-                        total += item.Value.Size;
-                    }
-                    DoOutput(String.Format("Total index size {0}", BytesToString(total))); 
-                }
-            }            
-            else
-            // show dupes
-            foreach (IGrouping<string, FileIndexItem> g in dupes)
-            {
-                // Print the key value of the IGrouping.
-                DoOutput(String.Format("Duplicate files with hash: {0}", g.Key));
-                // Iterate over each value in the IGrouping and print the value.
-                foreach (FileIndexItem item in g)
-                {
-                    DoOutput(String.Format("     {0}", item.FullFilename));
-                    total += item.Size;
-                }
-                DoOutput(String.Format("Total size of duplicate files {0}", BytesToString(total))); 
-            }
-        }
-
+       
         /// <summary>
         /// Convert bytes to human readable string
         /// Thanks to https://stackoverflow.com/questions/281640/how-do-i-get-a-human-readable-file-size-in-bytes-abbreviation-using-net

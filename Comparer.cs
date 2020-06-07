@@ -28,13 +28,12 @@ namespace dupefiles
             this.fidx.Load();
 
             // Parse arguments
-            CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, IndexInfoOptions, SetupOptions>(args)
+            CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, SetupOptions>(args)
                 .MapResult(
                 (AddOptions opts) => RunAddAndReturnExitCode(opts),
                 (RemoveOptions opts) => RunRemoveAndReturnExitCode(opts),
                 (PurgeOptions opts) => RunPurgeAndReturnExitCode(opts),
                 (ScanOptions opts) => RunScanAndReturnExitCode(opts),
-                (IndexInfoOptions opts) => RunIndexInfoAndReturnExitCode(opts),
                 (SetupOptions opts) => RunSetupAndReturnExitCode(opts),
                 errs => HandleParseError(errs));
 
@@ -95,12 +94,6 @@ namespace dupefiles
             return 0;
 		}
 		
-        private int RunIndexInfoAndReturnExitCode(IndexInfoOptions opt)
-		{
-            this.fidx.Info(opt);
-            return 0;
-		}
-
         private int RunSetupAndReturnExitCode(SetupOptions opt)
         {
             this.fidx.SaveSetup(opt);

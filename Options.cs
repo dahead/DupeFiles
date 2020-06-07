@@ -13,7 +13,7 @@ namespace dupefiles
 
     public enum LogAddType {NewLine, Append};
 
-    [Verb("idplus", HelpText = "Add file contents to the index.")]
+    [Verb("add", HelpText = "Add file contents to the index.")]
     public class AddOptions {
 
         [Option(Required = true, HelpText = "Path of directory to add.")] 
@@ -31,7 +31,7 @@ namespace dupefiles
     }
 
 
-    [Verb("idremove", HelpText = "Remove file contents from the index.")]
+    [Verb("remove", HelpText = "Remove file contents from the index.")]
     public class RemoveOptions {
 
         [Option(Required = true, HelpText = "Pattern for file or directory names to remove.")] 
@@ -39,23 +39,19 @@ namespace dupefiles
 
     }
 
-    [Verb("idpurge", HelpText = "Purge the index of non existant files.")]
+    [Verb("purge", HelpText = "Purge the index of non existant files.")]
     public class PurgeOptions {
     }
 
-    [Verb("idscan", HelpText = "Scan the index for duplicate files.")]
+    [Verb("scan", HelpText = "Scan the index for duplicate files.")]
     public class ScanOptions {
 
         [Option(Default = 1024*1024, HelpText = "Minimum file size in bytes for comparison to use.")] 
         public long MinSize { get; set; }
 
-        [Option(Default = 1024*1024*1024, HelpText = "Maximum file size in bytes for comparison to use.")] 
+        [Option(Default = long.MaxValue, HelpText = "Maximum file size in bytes for comparison to use.")] 
         public long MaxSize { get; set; }        
 
-    }
-
-    [Verb("idinfo", HelpText = "Show some information about the index.")]
-    public class IndexInfoOptions {
     }
 
     [Verb("setup", HelpText = "Configures stuff.")]
