@@ -215,12 +215,18 @@ namespace dupefiles
                     };
                     // Add new item to index
                     this.Items.Add(newitem.FullFilename, newitem);
-                    DoOutput($"Adding file {fi.FullName}");
                     fc +=1;                   
                 }
                 catch (System.ArgumentException)
                 {
                 }
+
+                // log every 100th new file we add to the output so we see something
+                if (fc % 100 == 0 && fc != 0)
+                {
+                    DoOutput($"- Adding file to index: {fi.FullName}");
+                }
+
             }
             DoOutput($"Added directory {opt.Path} with {fc} items.");
             return fc;
@@ -229,13 +235,14 @@ namespace dupefiles
         public int Remove(RemoveOptions opt)
         {
             int fc = 0;
-            foreach (KeyValuePair<string, FileIndexItem> item in this.Items)
+            // foreach (KeyValuePair<string, FileIndexItem> item in this.Items)
+            foreach (KeyValuePair<string, FileIndexItem> item in this.Items.Where(t => t.Key.Contains(opt.Pattern)))
             {
-                if (item.Key.Contains(opt.Pattern))
-                {
+                // if (item.Key.Contains(opt.Pattern))
+                // {
                     this.Items.Remove(item.Key);
                     fc += 1;
-                }
+                // }
             }
             DoOutput($"Removed {fc} items from the index.");
             return fc;
@@ -287,7 +294,7 @@ namespace dupefiles
                     {
                         todo.Enqueue(subdir);
                     }
-                    catch (System.Exception ex)                    
+                    catch (System.Exception)                    
                     {                   
                         continue;
                     }
@@ -297,12 +304,12 @@ namespace dupefiles
                 {
                     files = Directory.GetFiles(dir, opt.Pattern);
                 }                
-                catch (IOException ex)
+                catch (IOException)
                 {
                     // DoOutput($"IO Exception: {ex.Message}");
                     continue;
                 }
-                catch (System.UnauthorizedAccessException ex)
+                catch (System.UnauthorizedAccessException)
                 {
                     // DoOutput($"UnauthorizedAccess Exception: {ex.Message}");
                     continue;
@@ -504,12 +511,12 @@ namespace dupefiles
                                         this.Dupes.Add(sub.Value.FullFilename, sub.Value);
                                         dupesfound += 1;                                        
                                     }
-                                    catch (System.Exception ex)
+                                    catch (System.Exception)
                                     {
                                     }
                                 }
                             }
-                            catch (System.Exception ex)
+                            catch (System.Exception)
                             {
                                 // DoOutput($"Error comparing files {file1.Name} and {file2.Name}. Error: {ex.Message}.");
                             }
