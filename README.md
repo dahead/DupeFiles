@@ -17,6 +17,8 @@ dupefiles.exe scan
 ```
 
 ### Version history
+- 1.2.1 (4/15/2021)
+    - Two new output types: XML and Text
 - 1.2.0 (07/06/2020)
     - New scan option "output" for storing the found duplicate file information.
     - Removed some errors when rescanning folders with new files which wheren't previously scanned.

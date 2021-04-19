@@ -9,7 +9,13 @@ using CommandLine.Text;
 namespace dupefiles
 {
 
-    public enum OutputType { Silent, Console, LogFile }
+    public enum OutputType { Console, LogFile, Silent }
+
+    public enum ExportType { JSON, XML, TXT }
+
+    public enum CleaningMethod { MoveDupesToNewLocation, DeleteDupes, DeleteAllWhichMatchFilter, MoveDupesToRecycleBin, ReplaceDupesWithLink, ReplaceDupesWithTextfile }
+
+    public enum AnalyticType { GroupByOrigin, GroupByFileType }
 
     [Verb("add", HelpText = "Add files to the index.")]
     public class AddOptions {
@@ -45,8 +51,34 @@ namespace dupefiles
         [Option(Default = long.MaxValue, HelpText = "Maximum file size in bytes for comparison to use.")] 
         public long MaxSize { get; set; }
         
-        [Option(Default = "output.json", HelpText = "Filename where are found duplicate files are saved.")] 
-        public string Output { get; set; }
+    }
+
+    [Verb("clean", HelpText = "Tools for removing duplicate files.")]
+    public class CleanOptions
+    {
+        [Option(Required = true, HelpText = "Type of the cleaning method.")]
+        public CleaningMethod Method { get; set; }
+        
+        [Option(HelpText = "Filter for some cleaning methods.")]
+        public string Filter { get; set; }
+
+        [Option(HelpText = "Directory where to move the found duplicate files.")]
+        public string MoveToDirectory { get; set; }
+        
+    }
+
+    [Verb("analytics", HelpText = "Tools for analyzing duplicate files.")]
+    public class AnalyticsOptions
+    {
+        [Option(Required = true, HelpText = "Type of the analytic.")]
+        public AnalyticType Type { get; set; }
+    }
+
+    [Verb("quick", HelpText = "Quick access to common functions.")]
+    public class QuickFunctions
+    {
+        [Option(Required = true, HelpText = "Path of the directory to scan.")]
+        public string Path { get; set; }
     }
 
     [Verb("setup", HelpText = "Configures stuff.")]
@@ -55,8 +87,14 @@ namespace dupefiles
         [Option(Default = OutputType.Console, HelpText = "The output type. Console, LogFile or Silent.")] 
         public OutputType OutputType { get; set; }   
 
+        [Option(Default = ExportType.JSON, HelpText = "The export type. JSON, XML oder Text.")] 
+        public ExportType ExportType { get; set; }   
+
         [Option(Default = "log", HelpText = "Filename of the log file (when output is set to LogFile or XML).")] 
         public string LogFilename { get; set; }
+
+        [Option(Default = "output", HelpText = "Filename to use for the result output.")]
+        public string OutputFilename { get; set; }
 
         [Option(Default = false, HelpText = "Persistent mode. Don't write anything to the disk.")] 
         public bool PersistentMode { get; set; }

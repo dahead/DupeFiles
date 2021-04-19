@@ -18,54 +18,65 @@ namespace dupefiles
         public Comparer()
         {
             this.fidx = new FileIndex();
+
+            // ConsoleKeyInfo cki;
+            Console.Clear();
+
+            // Establish an event handler to process key press events.
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(consoleCancelHandler);
+
+            //// show Version
+            //this.fidx.DoOutput(
+            //    Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyProductAttribute>().Product + 
+            //    " Version " + 
+            //    Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
+            //    );
+
         }
 
         public void Init(string[] args)
         {
-
+            // load the configuration
             this.fidx.LoadSetup();
 
             // load the index
             this.fidx.Load();
 
-            // show Version
-            // this.fidx.DoOutput(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-
             // Parse arguments
-            CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, SetupOptions>(args)
+            CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, QuickFunctions, CleanOptions, AnalyticsOptions, SetupOptions>(args)
                 .MapResult(
                         (AddOptions opts) => RunAddAndReturnExitCode(opts),
                         (RemoveOptions opts) => RunRemoveAndReturnExitCode(opts),
                         (PurgeOptions opts) => RunPurgeAndReturnExitCode(opts),
                         (ScanOptions opts) => RunScanAndReturnExitCode(opts),
+                        (QuickFunctions opts) => RunQuickFunctionsAndReturnExitCode(opts),
+                        (CleanOptions opts) => RunCleanOptionsAndReturnExitCode(opts),
+                        (AnalyticsOptions opts) => RunAnalyticsOptionsAndReturnExitCode(opts),
                         (SetupOptions opts) => RunSetupAndReturnExitCode(opts),
                     errs => HandleParseError(errs)
                 );
         }
 
+        protected void consoleCancelHandler(object sender, ConsoleCancelEventArgs args)
+        {
+            this.fidx.Cancel = true;
+            this.fidx.DoOutput("Cancelling...");
+            // this.fidx.SaveIndex();
+
+            // Set the Cancel property to true to prevent the process from terminating.
+            args.Cancel = true;
+        }
+
         private int HandleParseError(IEnumerable<CommandLine.Error> errors)
         {
-            // throw new NotImplementedException();
-            // Todo...            
             return 0;
         }
 
         private int RunAddAndReturnExitCode(AddOptions opt)
 		{	
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            int result = this.fidx.AddDirectory(opt);
+            // int result =
+            this.fidx.AddDirectory(opt);
             // Task result = this.fidx.AddDirectoryAsync(opt);
-
-            sw.Stop();
-            TimeSpan ts = sw.Elapsed;
-
-            // Format and display the TimeSpan value.
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-            this.fidx.DoOutput("Adding items took " + elapsedTime);
-
             return 0;
 		}
 		
@@ -76,28 +87,42 @@ namespace dupefiles
 
         private int RunPurgeAndReturnExitCode(PurgeOptions opt)
 		{
-            this.fidx.Purge(opt);
-            this.fidx.Save();
+            this.fidx.PurgeIndex(opt);
+            this.fidx.SaveIndex();
             return 0;
 		}
 
 		private int RunScanAndReturnExitCode(ScanOptions opt)
 		{
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             this.fidx.Scan(opt);
-
-            sw.Stop();
-            TimeSpan ts = sw.Elapsed;
-
-            // Format and display the TimeSpan value.
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-            this.fidx.DoOutput("Scan took " + elapsedTime);
-
             return 0;
 		}
-		
+
+        private int RunQuickFunctionsAndReturnExitCode(QuickFunctions opt)
+        {
+            ScanOptions so = new ScanOptions() { MinSize = 0, MaxSize = long.MaxValue };
+            AddOptions ao = new AddOptions() { Path = opt.Path, Pattern = "*.*", Recursive = true };
+            SetupOptions setop = new SetupOptions() { PersistentMode = false, LogFilename = "log.txt", ExportType = ExportType.XML, OutputFilename = "output", OutputType = OutputType.Console };
+
+            this.fidx.Setup = setop;
+            this.fidx.AddDirectory(ao);
+            this.fidx.Scan(so);            
+
+            return 0;
+        }
+
+        private int RunCleanOptionsAndReturnExitCode(CleanOptions opt)
+        {
+            this.fidx.Clean(opt);
+            return 0;
+        }
+
+        private int RunAnalyticsOptionsAndReturnExitCode(AnalyticsOptions opt)
+        {
+            this.fidx.Analyze(opt);
+            return 0;
+        }
+
         private int RunSetupAndReturnExitCode(SetupOptions opt)
         {
             this.fidx.SaveSetup(opt);
@@ -109,21 +134,13 @@ namespace dupefiles
             if (!this.fidx.Setup.PersistentMode)
             {           
                 // save index to file
-                this.fidx.Save();
+                this.fidx.SaveIndex();
 
                 // other stuff to do before closing...
                 // ...
 
                 // Write log to file
-                if (this.fidx.Setup.OutputType == OutputType.LogFile)
-                {
-                    // use a streamwriter
-                    using (StreamWriter swriter = new StreamWriter(this.fidx.Setup.LogFilename))
-                    {
-                        swriter.Write(this.fidx.LogFile.ToString());
-                    }  
-                    // System.IO.File.WriteAllText(this.fids.LogFile.ToString(), this.fids.Setup.LogFilename);
-                }
+                this.fidx.SaveLog();
             }
             else
             {
