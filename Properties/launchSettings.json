@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "dupefiles": {
+      "commandName": "Project",
+      "commandLineArgs": "quick --path \"C:\\Users\\""
+    }
+  }
+}
