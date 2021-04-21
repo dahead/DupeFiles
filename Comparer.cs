@@ -17,21 +17,14 @@ namespace dupefiles
 
         public Comparer()
         {
+            // Create new fileindex
             this.fidx = new FileIndex();
 
             // ConsoleKeyInfo cki;
-            Console.Clear();
+            // Console.Clear();
 
             // Establish an event handler to process key press events.
             Console.CancelKeyPress += new ConsoleCancelEventHandler(consoleCancelHandler);
-
-            //// show Version
-            //this.fidx.DoOutput(
-            //    Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyProductAttribute>().Product + 
-            //    " Version " + 
-            //    Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
-            //    );
-
         }
 
         public void Init(string[] args)
@@ -40,7 +33,9 @@ namespace dupefiles
             this.fidx.LoadSetup();
 
             // load the index
-            this.fidx.Load();
+            this.fidx.LoadIndex();
+
+            this.fidx.LoadDupeGroupList();
 
             // Parse arguments
             CommandLine.Parser.Default.ParseArguments<AddOptions, RemoveOptions, ScanOptions, PurgeOptions, QuickFunctions, CleanOptions, AnalyticsOptions, SetupOptions>(args)
@@ -73,21 +68,21 @@ namespace dupefiles
         }
 
         private int RunAddAndReturnExitCode(AddOptions opt)
-		{	
-            // int result =
-            this.fidx.AddDirectory(opt);
+		{
             // Task result = this.fidx.AddDirectoryAsync(opt);
+            this.fidx.AddDirectory(opt);
             return 0;
 		}
 		
         private int RunRemoveAndReturnExitCode(RemoveOptions opt)
-		{	
-            return this.fidx.Remove(opt);
+		{
+            this.fidx.Remove(opt);
+            return 0;
 		}        
 
         private int RunPurgeAndReturnExitCode(PurgeOptions opt)
 		{
-            this.fidx.PurgeIndex(opt);
+            this.fidx.PurgeIndex();
             this.fidx.SaveIndex();
             return 0;
 		}
@@ -102,11 +97,13 @@ namespace dupefiles
         {
             ScanOptions so = new ScanOptions() { MinSize = 0, MaxSize = long.MaxValue };
             AddOptions ao = new AddOptions() { Path = opt.Path, Pattern = "*.*", Recursive = true };
-            SetupOptions setop = new SetupOptions() { PersistentMode = false, LogFilename = "log.txt", ExportType = ExportType.XML, OutputFilename = "output", OutputType = OutputType.Console };
+            SetupOptions setop = new SetupOptions() { PersistentMode = true, LogFilename = "log.txt", ExportType = ExportType.XML, OutputFilename = "output", OutputType = OutputType.Console };
+            CleanOptions copt = new CleanOptions() { Method = CleaningMethod.DeleteByFilenameLength };
 
             this.fidx.Setup = setop;
             this.fidx.AddDirectory(ao);
-            this.fidx.Scan(so);            
+            this.fidx.Scan(so);
+            this.fidx.Clean(copt);
 
             return 0;
         }
@@ -119,7 +116,7 @@ namespace dupefiles
 
         private int RunAnalyticsOptionsAndReturnExitCode(AnalyticsOptions opt)
         {
-            this.fidx.Analyze(opt);
+            this.fidx.AnalyzeResults(opt);
             return 0;
         }
 
@@ -131,21 +128,17 @@ namespace dupefiles
 
         public void Close()
         {
-            if (!this.fidx.Setup.PersistentMode)
+            if (this.fidx.Setup.PersistentMode)
             {           
                 // save index to file
                 this.fidx.SaveIndex();
 
                 // other stuff to do before closing...
-                // ...
+                this.fidx.SaveDupeGroupList();
 
                 // Write log to file
                 this.fidx.SaveLog();
             }
-            else
-            {
-                Console.WriteLine("Persistent mode is on. No harddisk output.");
-            }            
         }
     }
 }

@@ -13,7 +13,7 @@ namespace dupefiles
 
     public enum ExportType { JSON, XML, TXT }
 
-    public enum CleaningMethod { MoveDupesToNewLocation, DeleteDupes, DeleteAllWhichMatchFilter, MoveDupesToRecycleBin, ReplaceDupesWithLink, ReplaceDupesWithTextfile }
+    public enum CleaningMethod { Move, Delete, DeleteByFilenameLength, Recycle, ReplaceWithLink, ReplaceWithTextfile }
 
     public enum AnalyticType { GroupByOrigin, GroupByFileType }
 
@@ -70,7 +70,7 @@ namespace dupefiles
     [Verb("analytics", HelpText = "Tools for analyzing duplicate files.")]
     public class AnalyticsOptions
     {
-        [Option(Required = true, HelpText = "Type of the analytic.")]
+        [Option(Required = true, Default = AnalyticType.GroupByFileType, HelpText = "Type of the analytic.")]
         public AnalyticType Type { get; set; }
     }
 
@@ -96,7 +96,7 @@ namespace dupefiles
         [Option(Default = "output", HelpText = "Filename to use for the result output.")]
         public string OutputFilename { get; set; }
 
-        [Option(Default = false, HelpText = "Persistent mode. Don't write anything to the disk.")] 
+        [Option(Default = true, HelpText = "Persistent mode. If set to false nothing will be written onto the disk.")] 
         public bool PersistentMode { get; set; }
     }
 
