@@ -4,6 +4,8 @@ DupeFiles is a csharp dotnet core application which runs under windows, linux an
 
 DupeFiles checks files for for file size, hash and finally binary.
 
+![DupeFiles GIF](https://https://github.com/dahead/DupeFiles/blob/master/DupeFiles.gif)
+
 ### Short demo
 ```
 // Show help
