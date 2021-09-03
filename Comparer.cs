@@ -95,9 +95,15 @@ namespace dupefiles
 
         private int RunQuickFunctionsAndReturnExitCode(QuickFunctions opt)
         {
+<<<<<<< HEAD
+            SetupOptions setop = new SetupOptions() { PersistentMode = true, LogFilename = "log.txt", ExportType = ExportType.XML, OutputFilename = "output", OutputType = OutputType.Console };
+            AddOptions ao = new AddOptions() { Path = opt.Path, Pattern = "*.*", Recursive = true, SkipDirectoriesStartingWithADot = true };
+            ScanOptions so = new ScanOptions() { MinSize = 0, MaxSize = long.MaxValue };
+=======
             ScanOptions so = new ScanOptions() { MinSize = 0, MaxSize = long.MaxValue };
             AddOptions ao = new AddOptions() { Path = opt.Path, Pattern = "*.*", Recursive = true };
             SetupOptions setop = new SetupOptions() { PersistentMode = true, LogFilename = "log.txt", ExportType = ExportType.XML, OutputFilename = "output", OutputType = OutputType.Console };
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
             CleanOptions copt = new CleanOptions() { Method = CleaningMethod.DeleteByFilenameLength };
 
             this.fidx.Setup = setop;

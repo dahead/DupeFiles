@@ -190,8 +190,13 @@ namespace dupefiles
         {
             if (System.IO.File.Exists(IndexFileName))
                 this.LoadIndexFrom(IndexFileName);
+<<<<<<< HEAD
+            // else
+            //    DoOutput($"Index not found: {IndexFileName}.");
+=======
             else
                 DoOutput($"Index not found: {IndexFileName}.");
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
         }
 
         public void LoadSetup(string filename = "")
@@ -435,10 +440,17 @@ namespace dupefiles
                         fc += 1;
                     }               
                 }
+<<<<<<< HEAD
+                // catch (System.ArgumentException argex)
+                // {
+                //     // DoOutput($"Exception: {argex.Message}", InternalLogOutputType.Error);
+                // }
+=======
                 catch (System.ArgumentException argex)
                 {
                     // DoOutput($"Exception: {argex.Message}", InternalLogOutputType.Error);
                 }
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
                 catch (System.Exception ex)
                 {
                     DoOutput($"Exception: {ex.Message}", InternalLogOutputType.Error);
@@ -573,7 +585,11 @@ namespace dupefiles
                     }
                 }                    
             }
+<<<<<<< HEAD
+            catch (System.Exception)
+=======
             catch (System.Exception ex)            
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
             {
                 // DoOutput($"Exception when creating sha256 hash: {ex.Message}.");
                 return "ErrorHash";
@@ -588,7 +604,11 @@ namespace dupefiles
             {
                 using (var md5 = MD5.Create())
                 {
+<<<<<<< HEAD
+                    using (var stream = new BufferedStream(File.OpenRead(filename), HashBufferSize))
+=======
                     using (var stream = new BufferedStream(File.OpenRead(filename), 1200000))
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
                     {
                         // DoOutput($"Calculating sha256 hash for {filename}.");
                         var hash = md5.ComputeHash(stream);
@@ -596,7 +616,11 @@ namespace dupefiles
                     }
                 }
             }
+<<<<<<< HEAD
+            catch (System.Exception)
+=======
             catch (System.Exception ex)
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
             {
                 // DoOutput($"Exception when creating MD5 hash: {ex.Message}.");
                 return "ErrorHash";
@@ -669,6 +693,10 @@ namespace dupefiles
             DoOutput("Done.", InternalLogOutputType.Green);
 
             DoOutput($"Calculating hashes for {fsd.Count()} file size duplicates...");
+<<<<<<< HEAD
+            int counter = 0;
+=======
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
             foreach (IGrouping<long, KeyValuePair<string, FileIndexItem>> g in fsd)
             {
                 // Only when we have more than one file
@@ -684,7 +712,12 @@ namespace dupefiles
                             do
                             {
                                 // output some progress
+<<<<<<< HEAD
+                            if (counter % 1000 == 0)
+                                Console.Write(".");
+=======
                                 // Console.Write(".");
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
                             } while (!x.IsCompleted);
                             // remember hash
                             this.Items[sub.Value.FullFilename].Hash = x.Result;
@@ -692,6 +725,11 @@ namespace dupefiles
                     }
                 }
 
+<<<<<<< HEAD
+                counter += 1;
+
+=======
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
                 // Cancel?
                 if (Cancel)
                     return;
@@ -699,7 +737,11 @@ namespace dupefiles
             DoOutput(Environment.NewLine + "Done.", InternalLogOutputType.Green);
 
             // Binary compare sha256 dupes
+<<<<<<< HEAD
+            counter = 1;
+=======
             int counter = 1;
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
             int dupesfound = 0;
             // Get all files with a hash
             IEnumerable<IGrouping<string, KeyValuePair<string, FileIndexItem>>> possibledupes =
@@ -978,7 +1020,11 @@ namespace dupefiles
                                     File.CreateText(fi.FullName + ".txt");
                                     group.Dupes.Remove(fi.FullName);
                                 }
+<<<<<<< HEAD
+                                catch (Exception)
+=======
                                 catch (Exception rfex)
+>>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
                                 {
                                 }
                             }
