@@ -4,11 +4,8 @@ DupeFiles is a csharp dotnet core application which runs under windows, linux an
 
 DupeFiles checks files for for file size, hash and finally binary.
 
-<<<<<<< HEAD
-=======
 ![DupeFiles GIF](https://raw.githubusercontent.com/dahead/DupeFiles/master/DupeFiles.gif)
 
->>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
 ### Short demo
 ```
 // Show help
@@ -63,8 +60,4 @@ quick --path /folder/to/scan
     - Removed the option "info". Instead information about the scan is shown after the scan is done.
     - MaxFileInfo is now the default value of Long.MaxValue.
 - 1.1.1
-<<<<<<< HEAD
     - Remove option to remove certain items from the index
-=======
-    - Remove option to remove certain items from the index
->>>>>>> ea5a6d1d8d5be10060e5749f0d04f1d83adef227
